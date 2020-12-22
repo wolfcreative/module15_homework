@@ -1,0 +1,97 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.6</title>
+
+    <style>
+        .button{border:none;background:#94e093;padding:16px 20px;cursor:pointer;font-size:14px;line-height:20px;border-radius:2px}
+        .button:hover,.button:focus{background:#80c97f}
+
+        input{flex:1;min-width:1px;height:52px;padding:10px 10px;border:2px solid #94e093;border-radius:2px}
+        input:hover,input:focus{border-color:#80c97f;background:#f9f9f9}
+
+        .management{display:flex}
+        .management>*{margin-left:10px}
+        .management>*:first-child{margin-left:0}
+
+        .window{height:500px;overflow-y:auto;border:2px solid #94e093;margin-top:10px;border-radius:2px;padding:10px 20px;box-sizing:border-box}
+        .window>*{width:100%}
+
+        .chat{max-width:520px;width:100%}
+        .chat p{width:100%}
+        .chat p>*{display:inline-block;border:2px solid #93aee0;border-radius:4px;padding:10px}
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            let chatWindow;
+            let websocket = new WebSocket('wss://echo.websocket.org/');
+            const chatWrapper = document.querySelector(".chat");
+            const buttonSend = document.querySelector('.chat .send');
+            const buttonGeo = document.querySelector('.chat .geo');
+            const inputMessage = document.querySelector('.chat input[type=text]');
+
+            websocket.onopen = function(res) {};
+            websocket.onmessage = function(res) {
+                renderMessage('<span>'+res.data+'</span>', 'left');
+            };
+            websocket.onerror = function(res) {
+                renderMessage('<span>'+res.data+'</span>', 'center');
+            };
+
+            function renderMessage(message, align) {
+                if (document.querySelector('.chat .window') === null){
+                    let div = document.createElement("div");
+                    div.className = 'window';
+                    chatWrapper.appendChild(div);
+                    chatWindow = document.querySelector(".chat .window");
+                }
+                
+                let paragraph = document.createElement("p");
+                paragraph.style.textAlign = align;
+                paragraph.innerHTML = message;
+                chatWindow.appendChild(paragraph);
+
+                // Автоскролл вниз
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+
+            buttonSend.addEventListener('click', () => {
+                let value = inputMessage.value;
+
+                websocket.send(value);
+                
+                if (value){
+                    renderMessage('<span>'+value+'</span>', 'right');
+                } else {
+                    renderMessage('<span style="border-color:red">Введите сообщение!</span>', 'right');
+                }
+            });
+
+            buttonGeo.addEventListener('click', () => {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const { coords } = position;
+                        renderMessage(`<a href="https://www.openstreetmap.org/#map=12/${coords.latitude}/${coords.longitude}" target="_blank">Геолокация</span>`, 'right');
+                    });
+                } else {
+                    renderMessage('<span style="border-color:red">Разрешите определить ваше местоположение!</span>', 'right');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Современный чат 2.1b</h1>
+
+    <div class="chat">
+        <div class="management">
+            <input type="text" placeholder="Здесь воодится текст сообщения" />
+
+            <button type="button" class="button send">Отправить</button>
+            <button type="button" class="button geo">Геолокация</button>
+        </div>
+    </div>
+</body>
+</html>

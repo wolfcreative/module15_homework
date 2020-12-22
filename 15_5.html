@@ -1,0 +1,30 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15.5</title>
+
+    <style>
+        .button{border:none;background:#94e093;padding:25px 50px;cursor:pointer;font-size:14px;line-height:20px;border-radius:2px}
+        .button:hover,.button:focus{background:#80c97f}
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const button = document.querySelector('button');
+
+            button.addEventListener('click', () => {
+                
+                alert(`Ширина экрана: ${window.screen.width}px. Высота экрана: ${window.screen.height}px.`);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Нажми на кнопку</h1>
+
+    <button class="button" type="button">
+        <span class="text">Показать данные!</span>
+    </button>
+</body>
+</html>
